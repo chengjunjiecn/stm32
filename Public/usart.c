@@ -69,44 +69,42 @@ void USART1_Init(u32 bound)
 void USART1_IRQHandler(void)                	//串口1中断服务程序
 {
 	u8 r;
+	//printf("1");
 	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)  //接收中断
 	{
 		r =USART_ReceiveData(USART1);//(USART1->DR);	//读取接收到的数据
-		
-		
-		
-		
-		if(r==11)
-		{
-			
-			printf("time: 5\r\n");
-			led1=0;
-			delay_ms(1000);	//隔1秒显示计数
-			
-			printf("time: 4\r\n");
-			led1=1;
-			delay_ms(1000);
-			
-			printf("time: 3\r\n");
-			led1=0;
-			delay_ms(1000);
-			
-			printf("time: 2\r\n");
-			led1=1;
-			delay_ms(1000);
-			
-			printf("time: 1\r\n");
-			led1=0;
-			delay_ms(1000);
-		}
-		
 		//Enter_Standby_Mode();	
 		USART_SendData(USART1,r);
 		while(USART_GetFlagStatus(USART1,USART_FLAG_TC) != SET);
 	} 
 	USART_ClearFlag(USART1,USART_FLAG_TC);
-} 	
-
+}
+/*
+int r = readByte();
+	if(r == 0xFE)
+	{
+		setSystemActive(1);
+	}
+	unsigned char tmpch;
+	tmpch = UARTRBR;
+	if(tmpch )//head
+	{
+		recstatu = 1;
+		ccnt	 = 0 ;
+		packerflag = 0;
+		return ;
+	}
+	if(tmpch )//tail
+	{
+		recstatu = 0;
+		packerflag = 1;
+		return ;
+	}
+	if(recstatu ==1)
+	{
+		rxbuf[ccnt++] = tmpch;
+	}
+	*/
  
 
 

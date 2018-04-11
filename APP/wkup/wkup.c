@@ -16,13 +16,13 @@ void Enter_Standby_Mode(void)
 	//PWR_WakeUpPinCmd(ENABLE);//Ê¹ÄÜ»½ĞÑ¹Ü½Å	Ê¹ÄÜ»òÕßÊ§ÄÜ»½ĞÑ¹Ü½Å¹¦ÄÜ
 	
 	
-	PWR_EnterSTANDBYMode();//½øÈë´ı»úÄ£Ê
+	PWR_EnterSTANDBYMode();//½øÈë´ı»ú
 	//PWR_EnterSleepMode(0);
 }
 
 
 
- void myPWR_EnterSleepMode(void)
+ void gotoSleepMode(void)
 {
 	printf("½øÈëÏµÍ³´ı»úÄ£Ê½ %d\r\n");
 	NVIC_SystemLPConfig(NVIC_LP_SLEEPDEEP,DISABLE);

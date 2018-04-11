@@ -20,18 +20,15 @@ int main()
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);  //中断优先级分组 分2组
 	LED_Init();
 	USART1_Init(9600);
-	
 	while(1)
 	{
-		led1=0;
-		delay_ms(1000);	//隔1秒显示计数
-		led1=1;
-		delay_ms(1000);
-		i++;
-		if(i > 10)
+		if(getSystemActive())
 		{
-			myPWR_EnterSleepMode();
-			i = 0;
+			ledSlink();
+			if(1)
+			{
+				handData();
+			}
 		}
 	}
 }
