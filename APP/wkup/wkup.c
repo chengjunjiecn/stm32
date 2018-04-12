@@ -24,7 +24,7 @@ void Enter_Standby_Mode(void)
 
  void gotoSleepMode(void)
 {
-	printf("进入系统待机模式 %d\r\n");
+	printf("进入系统待机模式 \n");
 	NVIC_SystemLPConfig(NVIC_LP_SLEEPDEEP,DISABLE);
 	NVIC_SystemLPConfig(NVIC_LP_SLEEPONEXIT,DISABLE);
 	__WFI();                                                 /* Request Wait For Interrupt */

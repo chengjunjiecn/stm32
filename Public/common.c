@@ -1,13 +1,4 @@
 #include "common.h"		 
-int isSystemActive = 0;
-int getSystemActive()
-{
-	return isSystemActive;
-}
-void setSystemActive(int state )
-{
-	isSystemActive = state;
-}
 
 void ledSlink()
 {
@@ -16,9 +7,7 @@ void ledSlink()
 		led1=1;
 		delay_ms(1000);
 }
-void systemGotoSleep()
-{
-}
+
 void handData()
 {
 }

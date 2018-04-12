@@ -30,5 +30,9 @@ int main()
 				handData();
 			}
 		}
+		else
+		{
+			gotoSleepMode();
+		}
 	}
 }
