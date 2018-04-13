@@ -8,16 +8,16 @@
 
 
 /*******************************************************************************
-* 函 数 名         : main
-* 函数功能		   : 主函数
-* 输    入         : 无
-* 输    出         : 无
+* 潞炉 脢媒 脙没         : main
+* 潞炉脢媒鹿娄脛脺		   : 脰梅潞炉脢媒
+* 脢盲    脠毛         : 脦脼
+* 脢盲    鲁枚         : 脦脼
 *******************************************************************************/
 int main()
 {
 	int i = 0;
 	SysTick_Init(72);
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);  //中断优先级分组 分2组
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);  //脰脨露脧脫脜脧脠录露路脰脳茅 路脰2脳茅
 	LED_Init();
 	USART1_Init(9600);
 	while(1)
@@ -25,8 +25,9 @@ int main()
 		if(getSystemActive())
 		{
 			ledSlink();
-			if(1)
+			if(isReceivedFrame())
 			{
+				printf("received a frame");
 				handData();
 			}
 		}
