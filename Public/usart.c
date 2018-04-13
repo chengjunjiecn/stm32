@@ -1,89 +1,114 @@
-#include "usart.h"		 
+#include "usart.h"
 #include "led.h"
 #include "wkup.h"
 int isSystemActive = 0;
-int fputc(int ch,FILE *p)  //º¯ÊıÄ¬ÈÏµÄ£¬ÔÚÊ¹ÓÃprintfº¯ÊıÊ±×Ô¶¯µ÷ÓÃ
+unsigned char buff[1024];
+unsigned char outbuff[1024];
+int outbufflen = 0;
+int recstatu = 0;
+int	ccnt	 = 0 ;
+int	packerflag = 0;
+
+int fputc(int ch,FILE *p)  //ÂºÂ¯ÃŠÃ½Ã„Â¬ÃˆÃÂµÃ„Â£Â¬Ã”ÃšÃŠÂ¹Ã“ÃƒprintfÂºÂ¯ÃŠÃ½ÃŠÂ±Ã—Ã”Â¶Â¯ÂµÃ·Ã“Ãƒ
 {
-	USART_SendData(USART1,(u8)ch);	
+	USART_SendData(USART1,(u8)ch);
 	while(USART_GetFlagStatus(USART1,USART_FLAG_TXE)==RESET);
 	return ch;
 }
 
 /*******************************************************************************
-* º¯ Êı Ãû         : USART1_Init
-* º¯Êı¹¦ÄÜ		   : USART1³õÊ¼»¯º¯Êı
-* Êä    Èë         : bound:²¨ÌØÂÊ
-* Êä    ³ö         : ÎŞ
-*******************************************************************************/ 
+* ÂºÂ¯ ÃŠÃ½ ÃƒÃ»         : USART1_Init
+* ÂºÂ¯ÃŠÃ½Â¹Â¦Ã„Ãœ		   : USART1Â³ÃµÃŠÂ¼Â»Â¯ÂºÂ¯ÃŠÃ½
+* ÃŠÃ¤    ÃˆÃ«         : bound:Â²Â¨ÃŒÃ˜Ã‚ÃŠ
+* ÃŠÃ¤    Â³Ã¶         : ÃÃ
+*******************************************************************************/
 void USART1_Init(u32 bound)
 {
-   //GPIO¶Ë¿ÚÉèÖÃ
+   //GPIOÂ¶Ã‹Â¿ÃšÃ‰Ã¨Ã–Ãƒ
 	GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
-	
+
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1,ENABLE);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO,ENABLE);	 //´ò¿ªÊ±ÖÓ
- 
-	
-	/*  ÅäÖÃGPIOµÄÄ£Ê½ºÍIO¿Ú */
-	GPIO_InitStructure.GPIO_Pin=GPIO_Pin_9;//TX			   //´®¿ÚÊä³öPA9
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO,ENABLE);	 //Â´Ã²Â¿ÂªÃŠÂ±Ã–Ã“
+
+
+	/*  Ã…Ã¤Ã–ÃƒGPIOÂµÃ„Ã„Â£ÃŠÂ½ÂºÃIOÂ¿Ãš */
+	GPIO_InitStructure.GPIO_Pin=GPIO_Pin_9;//TX			   //Â´Â®Â¿ÃšÃŠÃ¤Â³Ã¶PA9
 	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_AF_PP;	    //¸´ÓÃÍÆÍìÊä³ö
-	GPIO_Init(GPIOA,&GPIO_InitStructure);  /* ³õÊ¼»¯´®¿ÚÊäÈëIO */
-	GPIO_InitStructure.GPIO_Pin=GPIO_Pin_10;//RX			 //´®¿ÚÊäÈëPA10
-	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_IN_FLOATING;		  //Ä£ÄâÊäÈë
-	GPIO_Init(GPIOA,&GPIO_InitStructure); /* ³õÊ¼»¯GPIO */
-	
+	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_AF_PP;	    //Â¸Â´Ã“ÃƒÃÃ†ÃÃ¬ÃŠÃ¤Â³Ã¶
+	GPIO_Init(GPIOA,&GPIO_InitStructure);  /* Â³ÃµÃŠÂ¼Â»Â¯Â´Â®Â¿ÃšÃŠÃ¤ÃˆÃ«IO */
+	GPIO_InitStructure.GPIO_Pin=GPIO_Pin_10;//RX			 //Â´Â®Â¿ÃšÃŠÃ¤ÃˆÃ«PA10
+	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_IN_FLOATING;		  //Ã„Â£Ã„Ã¢ÃŠÃ¤ÃˆÃ«
+	GPIO_Init(GPIOA,&GPIO_InitStructure); /* Â³ÃµÃŠÂ¼Â»Â¯GPIO */
 
-   //USART1 ³õÊ¼»¯ÉèÖÃ
-	USART_InitStructure.USART_BaudRate = bound;//²¨ÌØÂÊÉèÖÃ
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b;//×Ö³¤Îª8Î»Êı¾İ¸ñÊ½
-	USART_InitStructure.USART_StopBits = USART_StopBits_1;//Ò»¸öÍ£Ö¹Î»
-	USART_InitStructure.USART_Parity = USART_Parity_No;//ÎŞÆæÅ¼Ğ£ÑéÎ»
-	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;//ÎŞÓ²¼şÊı¾İÁ÷¿ØÖÆ
-	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;	//ÊÕ·¢Ä£Ê½
-	USART_Init(USART1, &USART_InitStructure); //³õÊ¼»¯´®¿Ú1
-	
-	USART_Cmd(USART1, ENABLE);  //Ê¹ÄÜ´®¿Ú1 
-	
+
+   //USART1 Â³ÃµÃŠÂ¼Â»Â¯Ã‰Ã¨Ã–Ãƒ
+	USART_InitStructure.USART_BaudRate = bound;//Â²Â¨ÃŒÃ˜Ã‚ÃŠÃ‰Ã¨Ã–Ãƒ
+	USART_InitStructure.USART_WordLength = USART_WordLength_8b;//Ã—Ã–Â³Â¤ÃÂª8ÃÂ»ÃŠÃ½Â¾ÃÂ¸Ã±ÃŠÂ½
+	USART_InitStructure.USART_StopBits = USART_StopBits_1;//Ã’Â»Â¸Ã¶ÃÂ£Ã–Â¹ÃÂ»
+	USART_InitStructure.USART_Parity = USART_Parity_No;//ÃÃÃ†Ã¦Ã…Â¼ÃÂ£Ã‘Ã©ÃÂ»
+	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;//ÃÃÃ“Â²Â¼Ã¾ÃŠÃ½Â¾ÃÃÃ·Â¿Ã˜Ã–Ã†
+	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;	//ÃŠÃ•Â·Â¢Ã„Â£ÃŠÂ½
+	USART_Init(USART1, &USART_InitStructure); //Â³ÃµÃŠÂ¼Â»Â¯Â´Â®Â¿Ãš1
+
+	USART_Cmd(USART1, ENABLE);  //ÃŠÂ¹Ã„ÃœÂ´Â®Â¿Ãš1
+
 	USART_ClearFlag(USART1, USART_FLAG_TC);
-		
-	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);//¿ªÆôÏà¹ØÖĞ¶Ï
 
-	//Usart1 NVIC ÅäÖÃ
-	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;//´®¿Ú1ÖĞ¶ÏÍ¨µÀ
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=3;//ÇÀÕ¼ÓÅÏÈ¼¶3
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority =3;		//×ÓÓÅÏÈ¼¶3
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			//IRQÍ¨µÀÊ¹ÄÜ
-	NVIC_Init(&NVIC_InitStructure);	//¸ù¾İÖ¸¶¨µÄ²ÎÊı³õÊ¼»¯VIC¼Ä´æÆ÷¡¢	
+	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);//Â¿ÂªÃ†Ã´ÃÃ Â¹Ã˜Ã–ÃÂ¶Ã
+
+	//Usart1 NVIC Ã…Ã¤Ã–Ãƒ
+	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;//Â´Â®Â¿Ãš1Ã–ÃÂ¶ÃÃÂ¨ÂµÃ€
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=3;//Ã‡Ã€Ã•Â¼Ã“Ã…ÃÃˆÂ¼Â¶3
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority =3;		//Ã—Ã“Ã“Ã…ÃÃˆÂ¼Â¶3
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			//IRQÃÂ¨ÂµÃ€ÃŠÂ¹Ã„Ãœ
+	NVIC_Init(&NVIC_InitStructure);	//Â¸Ã¹Â¾ÃÃ–Â¸Â¶Â¨ÂµÃ„Â²ÃÃŠÃ½Â³ÃµÃŠÂ¼Â»Â¯VICÂ¼Ã„Â´Ã¦Ã†Ã·Â¡Â¢
 }
 
 /*******************************************************************************
-* º¯ Êı Ãû         : USART1_IRQHandler
-* º¯Êı¹¦ÄÜ		   : USART1ÖĞ¶Ïº¯Êı
-* Êä    Èë         : ÎŞ
-* Êä    ³ö         : ÎŞ
-*******************************************************************************/ 
-void USART1_IRQHandler(void)                	//´®¿Ú1ÖĞ¶Ï·şÎñ³ÌĞò
+* ÂºÂ¯ ÃŠÃ½ ÃƒÃ»         : USART1_IRQHandler
+* ÂºÂ¯ÃŠÃ½Â¹Â¦Ã„Ãœ		   : USART1Ã–ÃÂ¶ÃÂºÂ¯ÃŠÃ½
+* ÃŠÃ¤    ÃˆÃ«         : ÃÃ
+* ÃŠÃ¤    Â³Ã¶         : ÃÃ
+*******************************************************************************/
+void USART1_IRQHandler(void)                	//Â´Â®Â¿Ãš1Ã–ÃÂ¶ÃÂ·Ã¾ÃÃ±Â³ÃŒÃÃ²
 {
 	u8 r;
-	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)  //½ÓÊÕÖĞ¶Ï
+	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)  //Â½Ã“ÃŠÃ•Ã–ÃÂ¶Ã
 	{
-		r =USART_ReceiveData(USART1);//(USART1->DR);	//¶ÁÈ¡½ÓÊÕµ½µÄÊı¾İ
-		USART_SendData(USART1,r);
-		while(USART_GetFlagStatus(USART1,USART_FLAG_TC) != SET);
-	} 
+		r =USART_ReceiveData(USART1);//(USART1->DR);	//Â¶ÃÃˆÂ¡Â½Ã“ÃŠÃ•ÂµÂ½ÂµÃ„ÃŠÃ½Â¾Ã
+	}
 	USART_ClearFlag(USART1,USART_FLAG_TC);
-	
+
 	if(r == 0xFE)
 	{
 		isSystemActive = 1;
 	}
+	if(r == 0x68 && recstatu == 0)//head
+	{
+		recstatu = 1;
+		ccnt	 = 0 ;
+		packerflag = 0;
+		return ;
+	}
+	if(r == 0x16 )//tail
+	{
+		recstatu = 0;
+		packerflag = 1;
+		return ;
+	}
+	if(recstatu ==1)
+	{
+		buff[ccnt++] = r;
+	}
 }
 
-
+int isReceivedFrame()
+{
+	return packerflag;
+}
 int getSystemActive()
 {
 	return isSystemActive;
@@ -92,34 +117,100 @@ void setSystemActive(int state )
 {
 	isSystemActive = state;
 }
+void handData()
+{
+	Data d;
+	memset(&d,0,sizeof(d));
+	decode(&d);
+	encode(d);
+	sendData();
 
-/*
-int r = readByte();
-	if(r == 0xFE)
-	{
-		setSystemActive(1);
-	}
-	unsigned char tmpch;
-	tmpch = UARTRBR;
-	if(tmpch )//head
-	{
-		recstatu = 1;
-		ccnt	 = 0 ;
-		packerflag = 0;
-		return ;
-	}
-	if(tmpch )//tail
-	{
-		recstatu = 0;
-		packerflag = 1;
-		return ;
-	}
-	if(recstatu ==1)
-	{
-		rxbuf[ccnt++] = tmpch;
-	}
-	*/
- 
+}
+void sendData()
+{
+	int i = 0;
 
+	USART_SendData(USART1,0x68);
+	for(i = 0;i<outbufflen;i++)
+	{
+		USART_SendData(USART1,outbufflen[i]);
+		while(USART_GetFlagStatus(USART1,USART_FLAG_TC) != SET);
+	}
+	memset(outbufflen,0,sizeof(outbufflen));
+	outbufflen = 0;
+}
 
+void decode(Data * d )
+{
+
+	int i;
+	memcpy(d->addr,&buff[0],6);
+	d->head = buff[6];
+	d->controlCode = buff[7];
+	d->len = buff[8];
+	memcpy(d->data,&buff[9],d->len);
+	for(i = 0; i < d->len;i++)
+	{
+		d->data[i] -= 0x33H;
+	}
+	d->csc = buff[9+d->len];
+	int ret = crc(buff,ccnt);
+	if(ret == d->csc )
+	{
+		printf("crc check is ok");
+	}else
+	{
+		printf("crc check is failed %d",ret);
+	}
+}
+void encode(Data d)
+{
+	memcpy(&outbuff[0],d->addr,6);
+	outbuff[6] = d->head ;
+	outbuff[7] = d->controlCode ;
+	outbuff[8] = d->len ;
+	memcpy(&outbuff[9],d->data,d->len);
+	int ret = crc(outbuff,9+d->len);
+	outbuff[9+d->len] = ret ;
+
+}
+void bit_set(unsigned char *p_data, unsigned char pos, int flag)
+{
+	if (flag == 1)
+	{
+	    *p_data |= (1 << (pos - 1));
+	}
+	if (flag == 0)
+	{
+	    *p_data &= ~(1 << (pos - 1));
+	}
+}
+//A&(1<<i)
+int bit_get(int data, int index)
+{
+	int ret = 0;
+	ret = data&(1<<(index - 1));
+	if(ret > 0)
+	{
+		return 1;
+	} else
+	{
+		return 0;
+	}
+}
+int crc(unsigned char buffer[], int len)
+{
+	int sum = 0x68;
+	int i = 0;
+	for (i = 0; i < len; i++)
+	{
+		sum += buffer[i];
+	}
+	sum = sum % 256;
+	return sum;
+}
+//68 A0 A1 A2 A3 A4 A5 68 0 09 31 32 33 34 35 36 2e 37 38 7A 16   send
+//68 A0 A1 A2 A3 A4 A5 68 0 09 64 65 66 67 68 69 61 70 71 81 16   send +33h
+
+//68 A0 A1 A2 A3 A4 A5 68 80 0 31 16   receive send
 
