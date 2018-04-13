@@ -1,16 +1,14 @@
-#include "common.h"		 
+#include "common.h"
 
 void ledSlink()
 {
 		led1=0;
-		delay_ms(1000);	//¸ô1ÃëÏÔÊ¾¼ÆÊı
+		delay_ms(1000);	//Â¸Ã´1ÃƒÃ«ÃÃ”ÃŠÂ¾Â¼Ã†ÃŠÃ½
 		led1=1;
 		delay_ms(1000);
 }
 
-void handData()
-{
-}
+
 
 int struct_array(char* des, Data *src)
 {
@@ -23,14 +21,6 @@ int struct_array(char* des, Data *src)
 }
 
 
-void array_struct(Data * des ,char * src)
-{
-
-    char* temp = (char *) des;
-    int num;
-    for(num=0 ;num < sizeof(Data);num++)
-        *(temp++)= src[num] ;
-}
 
 
 void show_student(Data * name)
