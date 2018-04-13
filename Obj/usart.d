@@ -31,5 +31,7 @@
 .\obj\usart.o: .\Libraries\STM32F10x_StdPeriph_Driver\inc\stm32f10x_wwdg.h
 .\obj\usart.o: .\Libraries\STM32F10x_StdPeriph_Driver\inc\misc.h
 .\obj\usart.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\obj\usart.o: Public\common.h
 .\obj\usart.o: .\APP\led\led.h
 .\obj\usart.o: .\APP\wkup\wkup.h
+.\obj\usart.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h

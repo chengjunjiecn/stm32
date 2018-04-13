@@ -1,7 +1,7 @@
 .\obj\common.o: Public\common.c
 .\obj\common.o: Public\common.h
-.\obj\common.o: Public\usart.h
-.\obj\common.o: Public\system.h
+.\obj\common.o: .\APP\led\led.h
+.\obj\common.o: .\Public\system.h
 .\obj\common.o: .\User\stm32f10x.h
 .\obj\common.o: .\Libraries\CMSIS\core_cm3.h
 .\obj\common.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
@@ -31,6 +31,4 @@
 .\obj\common.o: .\Libraries\STM32F10x_StdPeriph_Driver\inc\stm32f10x_usart.h
 .\obj\common.o: .\Libraries\STM32F10x_StdPeriph_Driver\inc\stm32f10x_wwdg.h
 .\obj\common.o: .\Libraries\STM32F10x_StdPeriph_Driver\inc\misc.h
-.\obj\common.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
-.\obj\common.o: .\APP\led\led.h
 .\obj\common.o: .\APP\wkup\wkup.h

@@ -3,7 +3,7 @@
 void ledSlink()
 {
 		led1=0;
-		delay_ms(1000);	//¸ô1ÃëÏÔÊ¾¼ÆÊý
+		delay_ms(1000);	
 		led1=1;
 		delay_ms(1000);
 }

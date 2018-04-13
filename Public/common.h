@@ -1,7 +1,7 @@
 #ifndef _common_H
 #define _common_H
 
-#include "usart.h"
+
 #include "led.h"
 #include "wkup.h"
 

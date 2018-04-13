@@ -33,4 +33,6 @@
 .\obj\main.o: .\APP\led\led.h
 .\obj\main.o: .\Public\usart.h
 .\obj\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\obj\main.o: .\Public\common.h
 .\obj\main.o: .\APP\wkup\wkup.h
+.\obj\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h

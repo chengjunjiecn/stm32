@@ -9,7 +9,7 @@ void USART1_Init(u32 bound);
 void handData();
 void sendData();
 void decode(Data * d );
-void encode(Data d);
+void encode(Data d)
 
 #endif
 
