@@ -10,7 +10,8 @@ void handData();
 void sendData();
 void decode(Data * d );
 void encode(Data d);
-
+void sendDone();
+void encodeTest();
 #endif
 
 

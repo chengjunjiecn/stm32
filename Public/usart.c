@@ -3,12 +3,12 @@
 #include "wkup.h"
 #include "common.h"
 int isSystemActive = 0;
-unsigned char buff[1024];
+unsigned char inbuff[1024];
 unsigned char outbuff[1024];
 int outbufflen = 0;
-int recstatu = 0;
-int	ccnt	 = 0 ;
-int	packerflag = 0;
+int receiveStatus = 0;
+int	inbufflen	 = 0 ;
+int	frameFlag = 0;
 
 int fputc(int ch,FILE *p) 
 {
@@ -75,28 +75,28 @@ void USART1_IRQHandler(void)
 	{
 		isSystemActive = 1;
 	}
-	if(r == 0x68 && recstatu == 0)//head
+	if(r == 0x68 && receiveStatus == 0)//head
 	{
-		recstatu = 1;
-		ccnt	 = 0 ;
-		packerflag = 0;
+		receiveStatus = 1;
+		inbufflen	 = 0 ;
+		frameFlag = 0;
 		return ;
 	}
 	if(r == 0x16 )//tail
 	{
-		recstatu = 0;
-		packerflag = 1;
+		receiveStatus = 0;
+		frameFlag = 1;
 		return ;
 	}
-	if(recstatu ==1)
+	if(receiveStatus ==1)
 	{
-		buff[ccnt++] = r;
+		inbuff[inbufflen++] = r;
 	}
 }
 
 int isReceivedFrame()
 {
-	return packerflag;
+	return frameFlag;
 }
 int getSystemActive()
 {
@@ -112,8 +112,9 @@ void handData()
 	memset(&d,0,sizeof(d));
 	decode(&d);
 	encode(d);
+	//encodeTest();
 	sendData();
-
+	sendDone();
 }
 void sendData()
 {
@@ -126,34 +127,49 @@ void sendData()
 		USART_SendData(USART1,outbuff[i]);
 		while(USART_GetFlagStatus(USART1,USART_FLAG_TC) != SET);
 	}
+	USART_SendData(USART1,0x16);
+	while(USART_GetFlagStatus(USART1,USART_FLAG_TC) != SET);
+	
+}
+void sendDone()
+{
 	memset(outbuff,0,sizeof(outbuff));
 	outbufflen = 0;
+	memset(inbuff,0,sizeof(inbuff));
+	inbufflen = 0;
+	receiveStatus = 0;
+	inbufflen	 = 0 ;
+	frameFlag = 0;
 }
-
 void decode(Data * d  )
 {
 
 	int i;
 	int ret = 0;
-	memcpy(d->addr,&buff[0],6);
-	d->head = buff[6];
-	d->controlCode = buff[7];
-	d->len = buff[8];
-	memcpy(d->data,&buff[9],d->len);
+	memcpy(d->addr,&inbuff[0],6);
+	d->head = inbuff[6];
+	d->controlCode = inbuff[7];
+	d->len = inbuff[8];
+	memcpy(d->data,&inbuff[9],d->len);
 	for(i = 0; i < d->len;i++)
 	{
 		d->data[i] -= 0x33;
 	}
-	d->csc = buff[9+d->len];
-	ret = crc(buff,ccnt);
+	d->csc = inbuff[9+d->len];
+	ret = crc(inbuff,inbufflen-1);
 	if(ret == d->csc )
 	{
-		printf("crc check is ok\n");
+		//printf("crc check is ok\n");
 	}else
 	{
-		printf("crc check is failed %d\n",ret);
+		//printf("crc check is failed %d,%d\n",ret,d->csc);
 	}
-	packerflag = 0;
+	frameFlag = 0;
+}
+void encodeTest()
+{
+	memcpy(outbuff,inbuff,inbufflen);
+	outbufflen = inbufflen;
 }
 void encode(Data d)
 {
@@ -161,11 +177,11 @@ void encode(Data d)
 	memcpy(&outbuff[0],d.addr,6);
 	outbuff[6] = d.head ;
 	outbuff[7] = d.controlCode ;
-	outbuff[8] = d.len ;
-	memcpy(&outbuff[9],d.data,d.len);
-	ret = crc(outbuff,9+d.len);
-	outbuff[9+d.len] = ret ;
-	outbufflen = 9+d.len;
+	outbuff[8] = 0 ;
+	//memcpy(&outbuff[9],d.data,d.len);
+	ret = crc(outbuff,9);
+	outbuff[9] = ret ;
+	outbufflen = 10;
 }
 void bit_set(unsigned char *p_data, unsigned char pos, int flag)
 {
@@ -197,13 +213,14 @@ int crc(unsigned char buffer[], int len)
 	int i = 0;
 	for (i = 0; i < len; i++)
 	{
-		sum += buffer[i];
+		sum = sum + buffer[i];
+		
 	}
 	sum = sum % 256;
 	return sum;
 }
 //68 A0 A1 A2 A3 A4 A5 68 0 09 31 32 33 34 35 36 2e 37 38 7A 16   send
-//68 A0 A1 A2 A3 A4 A5 68 0 09 64 65 66 67 68 69 61 70 71 81 16   send +33h
+//68 A0 A1 A2 A3 A4 A5 68 0 09 64 65 66 67 68 69 61 6A 6B 45 16  send +33h
 
 //68 A0 A1 A2 A3 A4 A5 68 80 0 31 16   receive send
 

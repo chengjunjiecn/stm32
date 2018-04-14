@@ -32,15 +32,19 @@ Public\usart.h(9): warning:  #1295-D: Deprecated declaration handData - give arg
   void handData();
 Public\usart.h(10): warning:  #1295-D: Deprecated declaration sendData - give arg types
   void sendData();
-Public\usart.c(148): warning:  #223-D: function "crc" declared implicitly
-  	ret = crc(buff,ccnt);
-Public\usart.c(166): warning:  #223-D: function "crc" declared implicitly
-  	ret = crc(outbuff,9+d.len);
-Public\usart.c: 4 warnings, 0 errors
+Public\usart.h(13): warning:  #1295-D: Deprecated declaration sendDone - give arg types
+  void sendDone();
+Public\usart.h(14): warning:  #1295-D: Deprecated declaration encodeTest - give arg types
+  void encodeTest();
+Public\usart.c(159): warning:  #223-D: function "crc" declared implicitly
+  	ret = crc(inbuff,inbufflen-1);
+Public\usart.c(182): warning:  #223-D: function "crc" declared implicitly
+  	ret = crc(outbuff,9);
+Public\usart.c: 6 warnings, 0 errors
 linking...
-Program Size: Code=3388 RO-data=336 RW-data=48 ZI-data=3072  
+Program Size: Code=3348 RO-data=336 RW-data=48 ZI-data=3072  
 FromELF: creating hex file...
-".\Obj\Template.axf" - 0 Error(s), 4 Warning(s).
+".\Obj\Template.axf" - 0 Error(s), 6 Warning(s).
 
 <h2>Software Packages used:</h2>
 

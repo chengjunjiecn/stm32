@@ -21,7 +21,7 @@ int main()
 			ledSlink();
 			if(isReceivedFrame())
 			{
-				printf("received a frame\n");
+				//printf("received a frame\n");
 				handData();
 			}
 		}
