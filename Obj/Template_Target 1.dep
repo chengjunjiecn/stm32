@@ -483,7 +483,7 @@ I (.\Libraries\STM32F10x_StdPeriph_Driver\inc\stm32f10x_tim.h)(0x4D783BB4)
 I (.\Libraries\STM32F10x_StdPeriph_Driver\inc\stm32f10x_usart.h)(0x4D783BB4)
 I (.\Libraries\STM32F10x_StdPeriph_Driver\inc\stm32f10x_wwdg.h)(0x4D783BB4)
 I (.\Libraries\STM32F10x_StdPeriph_Driver\inc\misc.h)(0x4D783BB4)
-F (.\Public\usart.c)(0x5AD15906)(-c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\User -I .\Libraries\CMSIS -I .\Libraries\STM32F10x_StdPeriph_Driver\inc -I .\APP\led -I .\Public -I .\APP\beep -I .\APP\smg -I .\APP\key -I .\APP\exti -I .\APP\time -I .\APP\pwm -I .\APP\iwdg -I .\APP\wwdg -I .\APP\input -I .\APP\touch_key -I .\APP\wkup-I.\RTE\_Target_1-ID:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-ID:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="524" -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\obj\usart.o --omf_browse .\obj\usart.crf --depend .\obj\usart.d)
+F (.\Public\usart.c)(0x5AD1E113)(-c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\User -I .\Libraries\CMSIS -I .\Libraries\STM32F10x_StdPeriph_Driver\inc -I .\APP\led -I .\Public -I .\APP\beep -I .\APP\smg -I .\APP\key -I .\APP\exti -I .\APP\time -I .\APP\pwm -I .\APP\iwdg -I .\APP\wwdg -I .\APP\input -I .\APP\touch_key -I .\APP\wkup-I.\RTE\_Target_1-ID:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-ID:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="524" -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\obj\usart.o --omf_browse .\obj\usart.crf --depend .\obj\usart.d)
 I (Public\usart.h)(0x5AD1443D)
 I (Public\system.h)(0x58CB9F85)
 I (.\User\stm32f10x.h)(0x4D783CB4)

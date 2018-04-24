@@ -9,7 +9,7 @@ int outbufflen = 0;
 int receiveStatus = 0;
 int	inbufflen	 = 0 ;
 int	frameFlag = 0;
-
+int isCRCOK = 0;
 int fputc(int ch,FILE *p) 
 {
 	USART_SendData(USART1,(u8)ch);
@@ -119,7 +119,11 @@ void handData()
 void sendData()
 {
 	int i = 0;
-
+	if(isCRCOK == 0 )
+	{
+		printf("校验失败，请重发");
+		return;
+	}
 	USART_SendData(USART1,0x68);
 	while(USART_GetFlagStatus(USART1,USART_FLAG_TC) != SET);
 	for(i = 0;i<outbufflen;i++)
@@ -160,9 +164,11 @@ void decode(Data * d  )
 	if(ret == d->csc )
 	{
 		//printf("crc check is ok\n");
+		isCRCOK = 1;
 	}else
 	{
 		//printf("crc check is failed %d,%d\n",ret,d->csc);
+		isCRCOK = 0;
 	}
 	frameFlag = 0;
 }
