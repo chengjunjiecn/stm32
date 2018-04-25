@@ -119,6 +119,24 @@ void USART1_IRQHandler(void)                	//串口1中断服务程序
 	OSIntExit();  											 
 #endif
 } 
+
+void gotoSleepMode(void)
+{
+	printf("进入系统待机模式 \n");
+	NVIC_SystemLPConfig(NVIC_LP_SLEEPDEEP,DISABLE);
+	NVIC_SystemLPConfig(NVIC_LP_SLEEPONEXIT,DISABLE);
+	__WFI();                                                 /* Request Wait For Interrupt */
+}
+
+void Enter_Standby_Mode(void)
+{
+		
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR,ENABLE);//使能PWR外设时钟
+	PWR_ClearFlag(PWR_FLAG_WU);//清除Wake-up 标志
+	//PWR_WakeUpPinCmd(ENABLE);//使能唤醒管脚	使能或者失能唤醒管脚功能		
+	PWR_EnterSTANDBYMode();//进入待机
+	//PWR_EnterSleepMode(0);
+}
 #endif	
 
  
